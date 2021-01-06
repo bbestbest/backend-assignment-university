@@ -2,7 +2,7 @@
 
 const UniversityModel = use('App/Models/University')
 
-class UniversityController {
+class StudentController {
     async index () {
         const data = await UniversityModel.query().fetch()
 
@@ -10,15 +10,15 @@ class UniversityController {
     }
     async show ({ request }) {
         const { id } = request.params
-        const data = await UniversityModel.find({id})
+        const data = await UniversityModel.query().with('students').fetch()
 
         return { status: 200, error: undefined, data: data}
     }
     async store ({ request }) {
         const { body } = request
-        const { short_name, full_name} = body
+        const { short_name, full_name } = body
         const data = await UniversityModel.create(body)
- 
+
         return { status: 200, error: undefined, data: data}
     }
     async update ({ request }) {
@@ -46,4 +46,4 @@ class UniversityController {
     }
 }
 
-module.exports = UniversityController
+module.exports = StudentController
