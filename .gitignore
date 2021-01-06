@@ -16,4 +16,4 @@ database/*.sqlite
 .idea
 
 #database
-.mariadb/
+mariadb
