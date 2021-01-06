@@ -3,10 +3,10 @@
 /** @type {typeof import('@adonisjs/lucid/src/Lucid/Model')} */
 const Model = use('Model')
 
-class University extends Model {
-    Students() {
-        return this.hasMany('App/Models/Student')
+class Universities extends Model {
+    students () {
+        return this.belongsToMany('App/Models/Student').pivotTable('bridges')
     }
 }
 
-module.exports = University
+module.exports = Universities 

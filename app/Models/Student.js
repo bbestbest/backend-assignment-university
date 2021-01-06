@@ -4,8 +4,8 @@
 const Model = use('Model')
 
 class Student extends Model {
-    Universities() {
-        return this.belongsToMany('App/Models/University')
+    universities() {
+        return this.belongsToMany('App/Models/University').pivotTable('bridges')
     }
 }
 
