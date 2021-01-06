@@ -17,15 +17,6 @@
 const Route = use('Route')
 
 Route.group(() => {
-    Route.get('/student','StudentController.index')
-    Route.get('/student/:id','StudentController.show')
-    Route.post('/student','StudentController.store')
-    Route.patch('/student/:id','StudentController.update')
-    Route.delete('/student/:id','StudentController.delete')
-
-    Route.get('/university','UniversityController.index')
-    Route.get('/university/:id','UniversityController.show')
-    Route.post('/university','UniversityController.store')
-    Route.patch('/university/:id','UniveristyController.update')
-    Route.delete('/univeristy/:id','UniveristyController.delete')
+    Route.resource('student', 'StudentController')
+    Route.resource('university','UniversityController')
 }).prefix('api/v1')
