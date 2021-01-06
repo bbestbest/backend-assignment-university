@@ -10,7 +10,7 @@ class StudentController {
     }
     async show ({ request }) {
         const { id } = request.params
-        const data = await UniversityModel.query().with('students').fetch()
+        const data = await UniversityModel.query().with('students').where({id}).fetch()
 
         return { status: 200, error: undefined, data: data}
     }
