@@ -58,7 +58,7 @@
       university_name: "Hogwarts"
     })
 #### RESPONSE
-    FOUND University
+##### FOUND University
     "status": 200,
     "data": {
         "student": [
@@ -74,10 +74,10 @@
         "education_degree": "master"
     },
     "message": "Success"
-    NOT FOUND University
+##### NOT FOUND University
     "status": 200,
     "message": "University not found"
-    IF NOT FOUND Degree then will create degree
+##### IF NOT FOUND Degree then will create degree
     "status": 200,
     "message": "Create degree for university"
 ### Update student infomation
@@ -113,7 +113,6 @@
 #### RESPONSE 
     "status": 200,
     "message": "Item ${id} is destroying"
-
 ## University-Side
 
 ### Show every university
