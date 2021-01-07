@@ -89,7 +89,7 @@
       last_name: "Snow",
     })
 #### RESPONSE
-    BEFORE
+##### BEFORE
     "status": 200,
     "data": {
         "first_name": "John",
@@ -98,7 +98,7 @@
         "updated_at": "null",
         "id": 1
     }
-    AFTER
+##### AFTER
     "status": 200,
     "data": {
         "first_name": "Jack",
@@ -186,7 +186,7 @@
       full_name: "The University of Tokyo",
     })
 #### RESPONSE
-    BEFORE
+##### BEFORE
     "status": 200,
     "data": {
         "short_name": "HW",
@@ -195,7 +195,7 @@
         "updated_at": "null",
         "id": 1
     }
-    AFTER
+##### AFTER
     "status": 200,
     "data": {
         "short_name": "Todai",
