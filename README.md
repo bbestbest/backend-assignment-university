@@ -20,7 +20,7 @@
         }
     ]
     
-### Show student by following id
+### Show student by id
 
 #### REQUEST
     medthod: GET api/:version/student/:id
@@ -48,10 +48,10 @@
             ]
         }
     ]
-### Create student infomation by requirement
+### Create student infomation by following requirement
 #### REQUEST
     medthod: POST api/:version/student
-    
+    headers: {'Content-Type': 'application/json'},
     body: JSON.stringsify({
       first_name: "John",
       last_name: "Doe",
@@ -66,3 +66,36 @@
         "updated_at": "null",
         "id": 1
     }
+### Update student infomation
+#### REQUEST
+    medthod: PUT api/:version/student/:id
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringsify({
+      first_name: "Jack",
+      last_name: "Snow",
+    })
+#### RESPONSE
+    BEFORE
+    "status": 200,
+    "data": {
+        "first_name": "John",
+        "last_name": "Doe",
+        "created_at": "null",
+        "updated_at": "null",
+        "id": 1
+    }
+    AFTER
+    "status": 200,
+    "data": {
+        "first_name": "Jack",
+        "last_name": "Snow",
+        "created_at": "null",
+        "updated_at": "null",
+        "id": 1
+    }
+### Delete student infomation by id
+#### REQUEST
+    medthod: DELETE api/:version/student/:id
+#### RESPONSE 
+    "status": 200,
+    "message": "Item ${id} is destroying"
