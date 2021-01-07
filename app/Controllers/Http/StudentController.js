@@ -13,20 +13,22 @@ class StudentController {
     async show ({ request }) {
         const { id } = request.params
         const data = await StudentModel.query().with('universities').where({id}).fetch()
-        console.log(JSON.parse(JSON.stringify(data))[0])
 
         return { status: 200, error: undefined, data: data}
     }
     async store ({ request }) {
         const { body } = request
-        const { first_name, last_name, full_name} = body
-        const data = await StudentModel.create({ first_name, last_name })
-        const universityData = await UniversityModel.query().where({full_name}).fetch().then(response => JSON.parse(JSON.stringify(response)))
-        const testData = universityData.map(item => item.id)
-        let testId = await StudentModel.query().count('id as id').then(response => JSON.parse(JSON.stringify(response[0])))
-        const bridge = await BridgeModel.create({ student_id: testId.id, university_id: testData[0]})
-
-        return { status: 200, error: undefined, data: data}
+        const { first_name, last_name, university_name} = body
+        const universityData = await UniversityModel.query().where({full_name: university_name}).fetch().then(response => JSON.parse(JSON.stringify(response)))
+        if(universityData.length) {
+                const data = await StudentModel.create({ first_name, last_name })
+                const testData = universityData.map(item => item.id)
+                const testId = await StudentModel.query().max('id as id').then(response => JSON.parse(JSON.stringify(response)))
+                const bridge = await BridgeModel.create({ student_id: testId[0].id, university_id: testData[0]})
+                return { status: 200, error: undefined, data: data, message: 'Success link with university'}
+            } else {
+                return { status: 200, error: undefined, message: 'University not found'}
+            }
     }
     async update ({ request }) {
         const { params, body } = request
@@ -38,16 +40,16 @@ class StudentController {
 
         return { status: 200, error: undefined, data: data}
     }
-    async delete ({ request }) {
+    async destroy ({ request }) {
         const { params } = request
         const { id } = params
         let message = "";
         let data = await StudentModel.find(id)
         if(data !== null) {
             await data.delete()
-            message = "Delete Success`"
+            message = `Item ${id} is destroying`
         } else {
-            message = "Delete Fail"
+            message = "Item was missing or destroyed"
         }
         return { status: 200, error: undefined, message: message}
     }

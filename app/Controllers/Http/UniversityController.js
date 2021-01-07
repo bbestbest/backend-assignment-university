@@ -31,16 +31,16 @@ class StudentController {
 
         return { status: 200, error: undefined, data: data}
     }
-    async delete ({ request }) {
+    async destroy ({ request }) {
         const { params } = request
         const { id } = params
         let message = "";
         let data = await UniversityModel.find(id)
         if(data !== null) {
             await data.delete()
-            message = "Delete Success`"
+            message = `${id} was destroyed`
         } else {
-            message = "Delete Fail"
+            message = "Item was missing or destroyed"
         }
         return { status: 200, error: undefined, message: message}
     }
