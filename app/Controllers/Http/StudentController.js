@@ -25,7 +25,7 @@ class StudentController {
                 const testData = universityData.map(item => item.id)
                 const testId = await StudentModel.query().max('id as id').then(response => JSON.parse(JSON.stringify(response)))
                 const bridge = await BridgeModel.create({ student_id: testId[0].id, university_id: testData[0]})
-                return { status: 200, error: undefined, data: data, message: 'Success link with university'}
+                return { status: 200, error: undefined, data: data, message: 'Success'}
             } else {
                 return { status: 200, error: undefined, message: 'University not found'}
             }
