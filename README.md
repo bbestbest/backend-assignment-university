@@ -7,7 +7,7 @@
 ### Show every students
 
 #### REQUEST 
-    GET api/v1/student
+    medthod: GET api/:version/student
 #### RESPONSE
     "status": 200,
     "data": [
@@ -23,7 +23,7 @@
 ### Show student by following id
 
 #### REQUEST
-    GET api/v1/student/:id
+    medthod: GET api/:version/student/:id
 #### RESPONSE
     "status": 200,
     "data": [
@@ -48,3 +48,21 @@
             ]
         }
     ]
+### Create student infomation by requirement
+#### REQUEST
+    medthod: POST api/:version/student
+    
+    body: JSON.stringsify({
+      first_name: "John",
+      last_name: "Doe",
+      university_name: "Hogwarts"
+    })
+#### RESPONSE
+    "status": 200,
+    "data": {
+        "first_name": "John",
+        "last_name": "Doe",
+        "created_at": "null",
+        "updated_at": "null",
+        "id": 1
+    }
