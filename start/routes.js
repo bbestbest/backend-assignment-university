@@ -17,6 +17,6 @@
 const Route = use('Route')
 
 Route.group(() => {
-    Route.resource('student', 'StudentController')
-    Route.resource('university','UniversityController')
+    Route.resource('student', 'StudentController').apiOnly()
+    Route.resource('university','UniversityController').apiOnly()
 }).prefix('api/v1')
