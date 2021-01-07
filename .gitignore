@@ -17,3 +17,6 @@ database/*.sqlite
 
 #database
 mariadb
+
+#docker-compose
+docker-compose.yml
