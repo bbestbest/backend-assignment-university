@@ -16,15 +16,6 @@ class StudentController {
     async show ({ request }) {
         const { id } = request.params
         let data = await UniversityModel.query().where({id}).with('students').fetch().then(response => JSON.parse(JSON.stringify(response)))
-        // let mapData = data.map(item => data = {
-        //     id: item.id,
-        //     university_name: item.full_name,
-        //     created_at: item.created_at,
-        //     updated_at: item.updated_at,
-        //     students: item.students.map((studentItem) => 
-        //         studentItem
-        //     )
-        // })
 
         return { status: 200, error: undefined, data: data}
     }

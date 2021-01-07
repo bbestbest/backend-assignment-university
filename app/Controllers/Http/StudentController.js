@@ -22,7 +22,6 @@ class StudentController {
         const student_infomation = await StudentModel.query().where({ first_name, last_name }).fetch().then(response => JSON.parse(JSON.stringify(response)))
         const university_infomation = await UniversityModel.query().where({ full_name: university_name, education_degree: degree}).fetch().then(response => JSON.parse(JSON.stringify(response)))
         if(student_infomation.length && university_infomation.length) {
-            // const education = await UniversityModel.create({ full_name: university_name, education_degree: degree})
             const getStudentId = await StudentModel.query().where({ first_name, last_name }).fetch().then(response => JSON.parse(JSON.stringify(response)))
             const getUniversityId = await UniversityModel.query().where({ full_name: university_name, education_degree: degree }).fetch().then(response => JSON.parse(JSON.stringify(response)))
             const checkBridge = await BridgeModel.query().where({student_id: getStudentId[0].id, university_id: getUniversityId[0].id}).fetch().then(response => JSON.parse(JSON.stringify(response)))
@@ -32,7 +31,6 @@ class StudentController {
             return { status: 200, error: undefined, data: { student: student_infomation, universty_name: university_name, education_degree: degree }, message: 'Success'}
         } else if (!student_infomation.length && university_infomation.length) {
             const student = await StudentModel.create({ first_name, last_name })
-            // const education = await UniversityModel.create({ full_name: university_name, education_degree: degree})
             const getStudentId = await StudentModel.query().max('id as id').then(response => JSON.parse(JSON.stringify(response)))
             const getUniversityId = await UniversityModel.query().where({ full_name: university_name }).fetch().then(response => JSON.parse(JSON.stringify(response)))
             const checkBridge = await BridgeModel.query().where({student_id: getStudentId[0].id, university_id: getUniversityId[0].id}).fetch().then(response => JSON.parse(JSON.stringify(response)))
