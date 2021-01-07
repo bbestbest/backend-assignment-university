@@ -61,16 +61,25 @@
     FOUND University
     "status": 200,
     "data": {
-        "first_name": "John",
-        "last_name": "Doe",
-        "created_at": "null",
-        "updated_at": "null",
-        "id": 1
-    }
-    "Message":"Success"
+        "student": [
+            {
+                "first_name": "bbest",
+                "last_name": "best",
+                "created_at": "2021-01-07 23:04:58",
+                "updated_at": "2021-01-07 23:04:58",
+                "id": 1
+            }
+        ],
+        "universty_name": "Chiang Mai University",
+        "education_degree": "master"
+    },
+    "message": "Success"
     NOT FOUND University
     "status": 200,
     "message": "University not found"
+    IF NOT FOUND Degree then will create degree
+    "status": 200,
+    "message": "Create degree for university"
 ### Update student infomation
 #### REQUEST
     medthod: PUT api/:version/student/:id
