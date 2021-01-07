@@ -1,31 +1,50 @@
-# Adonis fullstack application
+# Example API of student and university
 
-This is the fullstack boilerplate for AdonisJs, it comes pre-configured with.
+## API Version : v1
 
-1. Bodyparser
-2. Session
-3. Authentication
-4. Web security middleware
-5. CORS
-6. Edge template engine
-7. Lucid ORM
-8. Migrations and seeds
+## Student-Side
 
-## Setup
+### Show every students
 
-Use the adonis command to install the blueprint
+#### REQUEST 
+    GET api/v1/student
+#### RESPONSE
+    "status": 200,
+    "data": [
+        {
+            "id": 1,
+            "first_name": "John",
+            "last_name": "Doe",
+            "created_at": null,
+            "updated_at": null
+        }
+    ]
+    
+### Show student by following id
 
-```bash
-adonis new yardstick
-```
-
-or manually clone the repo and then run `npm install`.
-
-
-### Migrations
-
-Run the following command to run startup migrations.
-
-```js
-adonis migration:run
-```
+#### REQUEST
+    GET api/v1/student/:id
+#### RESPONSE
+    "status": 200,
+    "data": [
+        {
+            "id": 1,
+            "first_name": "John",
+            "last_name": "Doe",
+            "created_at": null,
+            "updated_at": null,
+            "universities": [
+                {
+                    "id": 1,
+                    "short_name": "HW",
+                    "full_name": "Hogwarts",
+                    "created_at": null,
+                    "updated_at": null,
+                    "pivot": {
+                        "university_id": 1,
+                        "student_id": 1
+                    }
+                }
+            ]
+        }
+    ]
