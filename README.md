@@ -9,7 +9,7 @@ This project require a localhost server to make a migration and you have to crea
 ## Run the apllication
     adonis serve --dev
 
-# How it work
+# Usage
 
 ## Student-Side
 
