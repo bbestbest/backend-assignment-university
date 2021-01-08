@@ -2,8 +2,10 @@
 This is Adonis CRUD api project for student side and university side, you can store student data when there are university in datbase
 
 ## API Version : v1
+so url will be api/:version/ 
 
-# Getting stated
+## Run the apllication
+    adonis serve --dev
 
 ## Student-Side
 
