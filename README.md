@@ -1,7 +1,9 @@
 # About the project
-This is CRUD api project for student side and university side, you can store student data when there are university in datbase
+This is Adonis CRUD api project for student side and university side, you can store student data when there are university in datbase
 
 ## API Version : v1
+
+# Getting stated
 
 ## Student-Side
 
