@@ -1,4 +1,5 @@
-# Example API of student and university
+# How API of student and university work
+This is CRUD project for student side and university side, you can store student data when there are university in datbase
 
 ## API Version : v1
 
