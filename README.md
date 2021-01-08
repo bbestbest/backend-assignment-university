@@ -6,7 +6,7 @@ This is Adonis CRUD api project for student and university sides, you can store 
 ## Getting started
 This project require a localhost server to make a migration and you have to create and set .env by yourself
 
-## Run the apllication
+## Run the application
     adonis serve --dev
 
 # Usage
