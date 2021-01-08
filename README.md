@@ -63,14 +63,14 @@
     "data": {
         "student": [
             {
-                "first_name": "bbest",
-                "last_name": "best",
-                "created_at": "2021-01-07 23:04:58",
-                "updated_at": "2021-01-07 23:04:58",
+                "first_name": "John",
+                "last_name": "Doe",
+                "created_at": "NULL",
+                "updated_at": "NULL",
                 "id": 1
             }
         ],
-        "universty_name": "Chiang Mai University",
+        "universty_name": "Hogwarts",
         "education_degree": "master"
     },
     "message": "Success"
