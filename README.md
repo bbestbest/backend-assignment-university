@@ -1,6 +1,15 @@
-# Example API of student and university
+# About the project
+This is Adonis CRUD api project for student and university sides, you can store student data when there are university in database
 
 ## API Version : v1
+
+## Getting started
+This project require a localhost server to make a migration and you have to create and set .env by yourself
+
+## Run the application
+    adonis serve --dev
+
+# Usage
 
 ## Student-Side
 
@@ -58,19 +67,28 @@
       university_name: "Hogwarts"
     })
 #### RESPONSE
-    FOUND University
+##### FOUND University
     "status": 200,
     "data": {
-        "first_name": "John",
-        "last_name": "Doe",
-        "created_at": "null",
-        "updated_at": "null",
-        "id": 1
-    }
-    "Message":"Success"
-    NOT FOUND University
+        "student": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "created_at": "NULL",
+                "updated_at": "NULL",
+                "id": 1
+            }
+        ],
+        "universty_name": "Hogwarts",
+        "education_degree": "master"
+    },
+    "message": "Success"
+##### NOT FOUND University
     "status": 200,
     "message": "University not found"
+##### IF NOT FOUND Degree then will create degree
+    "status": 200,
+    "message": "Create degree for university"
 ### Update student infomation
 #### REQUEST
     medthod: PUT api/:version/student/:id
@@ -80,7 +98,7 @@
       last_name: "Snow",
     })
 #### RESPONSE
-    BEFORE
+##### BEFORE
     "status": 200,
     "data": {
         "first_name": "John",
@@ -89,7 +107,7 @@
         "updated_at": "null",
         "id": 1
     }
-    AFTER
+##### AFTER
     "status": 200,
     "data": {
         "first_name": "Jack",
@@ -104,7 +122,6 @@
 #### RESPONSE 
     "status": 200,
     "message": "Item ${id} is destroying"
-
 ## University-Side
 
 ### Show every university
@@ -178,7 +195,7 @@
       full_name: "The University of Tokyo",
     })
 #### RESPONSE
-    BEFORE
+##### BEFORE
     "status": 200,
     "data": {
         "short_name": "HW",
@@ -187,7 +204,7 @@
         "updated_at": "null",
         "id": 1
     }
-    AFTER
+##### AFTER
     "status": 200,
     "data": {
         "short_name": "Todai",
