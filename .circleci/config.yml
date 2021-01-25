@@ -13,7 +13,6 @@ jobs:
           name: Run Migrations
           command: |
             mv .env.testing .env
-            node ace migration:run
       - run:
           name: Test
           command: yarn test
