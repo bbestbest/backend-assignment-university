@@ -10,6 +10,10 @@ jobs:
           name: Install dependency
           command: yarn
       - run:
+          name: Add environment
+          command: 
+            mv .env.testing .env
+      - run:
           name: Test
           command: yarn test
 
