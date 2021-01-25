@@ -1,28 +1,24 @@
 version: 2.1
+
 jobs:
-  build:
-    working_directory: ~/repo
+  test:
     docker:
-      - image: circleci/node:11-browsers
+      - image: circleci/node:12.16.1
     steps:
       - checkout
       - run:
-          name: Update NPM
-          command: "sudo npm install -g npm"
-      - restore_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
-      - run:
-          name: Install Dependencies
-          command: npm install
-      - save_cache:
-          key: dependency-cache-{{ checksum "package-lock.json" }}
-          paths:
-            - ./node_modules
+          name: Install dependency
+          command: yarn
       - run:
           name: Run Migrations
           command: |
             mv .env.testing .env
             node ace migration:run
       - run:
-          name: Run tests
-          command: npm run test
+          name: Test
+          command: yarn test
+
+workflows:
+  build_and_test:
+    jobs:
+      - test
