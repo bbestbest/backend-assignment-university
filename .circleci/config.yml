@@ -10,8 +10,8 @@ jobs:
           name: Install dependency
           command: yarn
       - run:
-          name: Build application
-          command: npm run build
+          name: Run application
+          command: adonis serve
       - run:
           name: Test
           command: yarn test
