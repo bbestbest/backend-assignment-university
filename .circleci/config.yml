@@ -8,7 +8,7 @@ jobs:
       - checkout
       - run:
           name: Install dependency
-          command: yarn
+          command: npm install yarn
       - run:
           name: Build application
           command: yarn build
