@@ -9,9 +9,9 @@ jobs:
       - run:
           name: Install dependency
           command: yarn
-      # - run:
-      #     name: Run application
-      #     command: yarn start
+      - run:
+          name: Run application
+          command: yarn start
       - run:
           name: Test
           command: yarn test
