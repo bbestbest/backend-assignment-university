@@ -16,6 +16,7 @@ database/*.sqlite
 .idea
 
 #database
+mysql
 mariadb
 
 #docker-compose
