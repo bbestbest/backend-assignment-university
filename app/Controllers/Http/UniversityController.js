@@ -5,7 +5,7 @@ const NumberTypeParamValidator = require("../../../service/NumberTypeParamValida
 const UniversityModel = use("App/Models/University");
 
 class UniversityController {
-  async index() {
+  async index({ response }) {
     let data = await UniversityModel.query()
       .groupBy("full_name")
       .fetch()
@@ -19,33 +19,32 @@ class UniversityController {
           updated_at: item.updated_at,
         })
     );
-    return { status: 200, error: undefined, data: data };
+    response.status(200).send(data);
   }
 
-  async show({ request }) {
+  async show({ request, response }) {
     const { id } = request.params;
 
     const validatedParam = await NumberTypeParamValidator(id);
     if (validatedParam.error) {
-      return { status: 422, error: validatedParam.error };
+      response.status(422).send(validatedParam.error);
     }
 
     let data = await UniversityModel.query()
       .where({ id })
       .with("students")
-      .fetch()
-      .then((response) => response.toJSON());
+      .fetch();
 
-    return { status: 200, data: data };
+    response.status(200).send(data);
   }
 
-  async store({ request }) {
+  async store({ request, response }) {
     const { body } = request;
     const { full_name, education_degree } = body;
 
     const validatedData = await UniversityValidator(body);
     if (validatedData.error) {
-      return { status: 422, error: validatedData.error };
+      response.status(422).send(validatedData.error);
     }
 
     const checkData = await UniversityModel.query()
@@ -58,25 +57,25 @@ class UniversityController {
         full_name,
         education_degree,
       });
-      return { status: 200, data: data };
+      response.status(200).send(data);
     } else {
-      return { status: 200, message: "Already duplicate" };
+      response.status(200).send("Already duplicated");
     }
   }
 
-  async update({ request }) {
+  async update({ request, response }) {
     const { params, body } = request;
     const { id } = params;
     const { full_name, education_degree } = body;
 
     const validatedParam = NumberTypeParamValidator(id);
     if (validatedParam.error) {
-      return { status: 422, error: validatedParam.error };
+      response.status(422).send(validatedParam.error);
     }
 
     const validatedData = UniversityValidator(body);
     if (validatedParam.error) {
-      return { status: 422, error: validatedData.error };
+      response.status(422).send(validatedData.error);
     }
 
     const checkData = await UniversityModel.query()
@@ -86,32 +85,35 @@ class UniversityController {
 
     let data = await UniversityModel.find(id);
     if (checkData[0] != undefined) {
-      return { status: 200, message: "Already duplicate" };
+      return { status: 200, message: "Already duplicated" };
     } else {
       data.merge(body);
       await data.save();
-      return { status: 200, data: data };
+      response.status(200).send(data);
     }
   }
 
-  async destroy({ request }) {
+  async destroy({ request, response }) {
     const { params } = request;
     const { id } = params;
     let message = "";
+    let status = 0;
 
     const validatedParam = NumberTypeParamValidator(id);
     if (validatedParam.error) {
-      return { status: 422, error: validatedParam.error };
+      response.status(422).send(validatedParam.error);
     }
 
     let data = await UniversityModel.find(id);
     if (data !== null) {
       await data.delete();
       message = `${id} was destroyed`;
+      status = 200;
     } else {
       message = "Item was missing or destroyed";
+      status = 404;
     }
-    return { status: 200, message: message };
+    response.status(status).send(message);
   }
 }
 

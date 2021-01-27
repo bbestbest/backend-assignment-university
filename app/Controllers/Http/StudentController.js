@@ -7,18 +7,18 @@ const BridgeModel = use("App/Models/Bridge");
 const UniversityModel = use("App/Models/University");
 
 class StudentController {
-  async index() {
+  async index({ response }) {
     const data = await StudentModel.query().fetch();
 
-    return { status: 200, error: undefined, data: data };
+    response.status(200).send(data);
   }
 
-  async show({ request }) {
+  async show({ request, response }) {
     const { id } = request.params;
 
     const validatedParam = await NumberTypeParamValidator(id);
     if (validatedParam.error) {
-      return { status: 422, error: validatedParam.error };
+      response.status(422).send(validatedParam.error);
     }
 
     const data = await StudentModel.query()
@@ -26,10 +26,10 @@ class StudentController {
       .where({ id })
       .fetch();
 
-    return { status: 200, error: undefined, data: data };
+    response.status(200).send(data);
   }
 
-  async store({ request }) {
+  async store({ request, response }) {
     const { body } = request;
     const { first_name, last_name, university_name, degree } = body;
     const university_infomation = await UniversityModel.query()
@@ -58,16 +58,11 @@ class StudentController {
           university_id: getUniversityId[0].id,
         });
       }
-      return {
-        status: 200,
-        error: undefined,
-        data: {
-          student: student_infomation,
-          universty_name: university_name,
-          education_degree: degree,
-        },
-        message: "Success",
-      };
+      response.status(200).send({
+        student: student_infomation,
+        universty_name: university_name,
+        education_degree: degree,
+      });
     } else if (!student_infomation.length && university_infomation.length) {
       const student = await StudentModel.create({ first_name, last_name });
       const getStudentId = await StudentModel.query()
@@ -90,16 +85,11 @@ class StudentController {
           university_id: getUniversityId[0].id,
         });
       }
-      return {
-        status: 200,
-        error: undefined,
-        data: {
-          student: [student],
-          universty_name: university_name,
-          education_degree: degree,
-        },
-        message: "Success",
-      };
+      response.status(200).send({
+        student: student,
+        universty_name: university_name,
+        education_degree: degree,
+      });
     } else if (!university_infomation.length) {
       const checkUniversity = await UniversityModel.query()
         .where({ full_name: university_name })
@@ -110,17 +100,9 @@ class StudentController {
           full_name: university_name,
           education_degree: degree,
         });
-        return {
-          status: 200,
-          error: undefined,
-          message: "Create degree for university",
-        };
+        response.status(200).send("Create degree for university");
       } else {
-        return {
-          status: 200,
-          error: undefined,
-          message: "University not found",
-        };
+        response.status(404).send(`${universty_name} University not found`);
       }
     }
   }
@@ -147,16 +129,15 @@ class StudentController {
 
     let data = await UniversityModel.find(id);
     if (checkData[0] != undefined) {
-      return { status: 200, message: "Already duplicate" };
+      response.status(200).send("Already duplicated");
     } else {
       data.merge(body);
       await data.save();
     }
-
-    return { status: 200, data: data };
+    response.status(200).send(data);
   }
 
-  async destroy({ request }) {
+  async destroy({ request, response }) {
     const { params } = request;
     const { id } = params;
     let message = "";
@@ -164,7 +145,7 @@ class StudentController {
 
     const validatedParam = await NumberTypeParamValidator(id);
     if (validatedParam.error) {
-      return { status: 422, error: validatedParam.error };
+      response.status(422).send(validatedParam.error);
     }
 
     if (data !== null) {
@@ -173,7 +154,7 @@ class StudentController {
     } else {
       message = "Item was missing or destroyed";
     }
-    return { status: 200, error: undefined, message: message };
+    response.status(200).send(message);
   }
 }
 
