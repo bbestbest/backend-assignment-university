@@ -7,8 +7,7 @@ const StudentModel = use("App/Models/Student");
 const BridgeModel = use("App/Models/Bridge");
 const UniversityModel = use("App/Models/University");
 
-const StudentIsInUniversity = require("../../../util/CheckStudentIsInUniversity");
-const StudentIsNotInUniversity = require("../../../util/CheckStudentIsNotInUniversity");
+const CheckStudentAndUniversity = require("../../../util/CheckStudentAndUniversity");
 
 class StudentController {
   async index({ response }) {
@@ -55,18 +54,28 @@ class StudentController {
 
     if (checkCase[0] == true && checkCase[1] == true) {
       console.log("Case : 1");
-      return await StudentIsInUniversity(response, body, {
-        UniversityModel,
-        StudentModel,
-        BridgeModel,
-      });
+      return await CheckStudentAndUniversity(
+        response,
+        body,
+        {
+          UniversityModel,
+          StudentModel,
+          BridgeModel,
+        },
+        1
+      );
     } else if (checkCase[0] == true && checkCase[1] == false) {
       console.log("Case : 2");
-      return await StudentIsNotInUniversity(response, body, {
-        UniversityModel,
-        StudentModel,
-        BridgeModel,
-      });
+      return await CheckStudentAndUniversity(
+        response,
+        body,
+        {
+          UniversityModel,
+          StudentModel,
+          BridgeModel,
+        },
+        2
+      );
     } else if (
       checkCase[0] == false &&
       (checkCase[1] == true || checkCase[1] == false)
