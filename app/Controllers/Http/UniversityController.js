@@ -1,14 +1,15 @@
 "use strict";
 
+const UniversityValidator = require("../../../service/UniversityValidator");
+const NumberTypeParamValidator = require("../../../service/NumberTypeParamValidator");
 const UniversityModel = use("App/Models/University");
 
 class UniversityController {
-  async index() {
+  async index({ response }) {
     let data = await UniversityModel.query()
       .groupBy("full_name")
       .fetch()
       .then((response) => response.toJSON());
-    console.log(data);
     let mapData = data.map(
       (item) =>
         (data = {
@@ -18,59 +19,101 @@ class UniversityController {
           updated_at: item.updated_at,
         })
     );
-    return { status: 200, error: undefined, data: data };
+    response.status(200).send(data);
   }
-  async show({ request }) {
+
+  async show({ request, response }) {
     const { id } = request.params;
+
+    const validatedParam = await NumberTypeParamValidator(id);
+    if (validatedParam.error) {
+      response.status(422).send(validatedParam.error);
+    }
+
     let data = await UniversityModel.query()
       .where({ id })
       .with("students")
-      .fetch()
-      .then((response) => response.toJSON());
+      .fetch();
 
-    return { status: 200, error: undefined, data: data };
+    response.status(200).send(data);
   }
-  async store({ request }) {
-    let { full_name, education_degree } = request.body;
-    if (education_degree === undefined) {
-      education_degree = "bachelor";
+
+  async store({ request, response }) {
+    const { body } = request;
+    const { full_name, education_degree } = body;
+
+    const validatedData = await UniversityValidator(body);
+    if (validatedData.error) {
+      response.status(422).send(validatedData.error);
     }
+
     const checkData = await UniversityModel.query()
       .where({ full_name, education_degree })
       .fetch()
       .then((response) => response.toJSON());
+
     if (!checkData.length) {
       const data = await UniversityModel.create({
         full_name,
         education_degree,
       });
-      return { status: 200, error: undefined, data: data };
+      response.status(200).send(data);
     } else {
-      return { status: 200, error: undefined, message: "Already duplicate" };
+      response.status(200).send("Already duplicated");
     }
   }
-  async update({ request }) {
+
+  async update({ request, response }) {
     const { params, body } = request;
     const { id } = params;
-    const { full_name } = body;
-    let data = await UniversityModel.find(id);
-    data.merge(body);
-    await data.save();
+    const { full_name, education_degree } = body;
 
-    return { status: 200, error: undefined, data: data };
+    const validatedParam = NumberTypeParamValidator(id);
+    if (validatedParam.error) {
+      response.status(422).send(validatedParam.error);
+    }
+
+    const validatedData = UniversityValidator(body);
+    if (validatedParam.error) {
+      response.status(422).send(validatedData.error);
+    }
+
+    const checkData = await UniversityModel.query()
+      .where(body)
+      .fetch()
+      .then((response) => response.toJSON());
+
+    let data = await UniversityModel.find(id);
+    if (checkData[0] != undefined) {
+      return { status: 200, message: "Already duplicated" };
+    } else {
+      data.merge(body);
+      await data.save();
+      response.status(200).send(data);
+    }
   }
-  async destroy({ request }) {
+
+  async destroy({ request, response }) {
     const { params } = request;
     const { id } = params;
     let message = "";
+    let status = 0;
+
+    const validatedParam = NumberTypeParamValidator(id);
+    if (validatedParam.error) {
+      response.status(422).send(validatedParam.error);
+    }
+
     let data = await UniversityModel.find(id);
     if (data !== null) {
       await data.delete();
       message = `${id} was destroyed`;
+      status = 200;
     } else {
       message = "Item was missing or destroyed";
+      status = 404;
     }
-    return { status: 200, error: undefined, message: message };
+    response.status(status).send(message);
   }
 }
 
