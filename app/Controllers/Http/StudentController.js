@@ -2,9 +2,13 @@
 
 const StudentValidator = require("../../../service/StudentValidator");
 const NumberTypeParamValidator = require("../../../service/NumberTypeParamValidator");
+
 const StudentModel = use("App/Models/Student");
 const BridgeModel = use("App/Models/Bridge");
 const UniversityModel = use("App/Models/University");
+
+const StudentIsInUniversity = require("../../../util/CheckStudentIsInUniversity");
+const StudentIsNotInUniversity = require("../../../util/CheckStudentIsNotInUniversity");
 
 class StudentController {
   async index({ response }) {
@@ -32,78 +36,47 @@ class StudentController {
   async store({ request, response }) {
     const { body } = request;
     const { first_name, last_name, university_name, degree } = body;
-    const university_infomation = await UniversityModel.query()
+
+    const validatedData = await StudentValidator(body);
+    if (validatedData.error) {
+      response.status(422).send(validatedData.error);
+    }
+
+    const university = await UniversityModel.query()
       .where({ full_name: university_name, education_degree: degree })
       .fetch()
       .then((response) => response.toJSON());
-    if (student_infomation.length && university_infomation.length) {
-      const getStudentId = await StudentModel.query()
-        .where({ first_name, last_name })
-        .fetch()
-        .then((response) => response.toJSON());
-      const getUniversityId = await UniversityModel.query()
-        .where({ full_name: university_name, education_degree: degree })
-        .fetch()
-        .then((response) => response.toJSON());
-      const checkBridge = await BridgeModel.query()
-        .where({
-          student_id: getStudentId[0].id,
-          university_id: getUniversityId[0].id,
-        })
-        .fetch()
-        .then((response) => response.toJSON());
-      if (!checkBridge.length) {
-        const bridge = await BridgeModel.create({
-          student_id: getStudentId[0].id,
-          university_id: getUniversityId[0].id,
-        });
-      }
-      response.status(200).send({
-        student: student_infomation,
-        universty_name: university_name,
-        education_degree: degree,
+    const student = await StudentModel.query()
+      .where({ first_name: first_name, last_name: last_name })
+      .fetch()
+      .then((response) => response.toJSON());
+
+    const checkCase = [university.length > 0, student.length > 0];
+
+    if (checkCase[0] == true && checkCase[1] == true) {
+      console.log("Case : 1");
+      return await StudentIsInUniversity(response, body, {
+        UniversityModel,
+        StudentModel,
+        BridgeModel,
       });
-    } else if (!student_infomation.length && university_infomation.length) {
-      const student = await StudentModel.create({ first_name, last_name });
-      const getStudentId = await StudentModel.query()
-        .max("id as id")
-        .then((response) => JSON.parse(JSON.stringify(response)));
-      const getUniversityId = await UniversityModel.query()
-        .where({ full_name: university_name })
-        .fetch()
-        .then((response) => JSON.parse(JSON.stringify(response)));
-      const checkBridge = await BridgeModel.query()
-        .where({
-          student_id: getStudentId[0].id,
-          university_id: getUniversityId[0].id,
-        })
-        .fetch()
-        .then((response) => response.toJSON());
-      if (!checkBridge.length) {
-        const bridge = await BridgeModel.create({
-          student_id: getStudentId[0].id,
-          university_id: getUniversityId[0].id,
-        });
-      }
-      response.status(200).send({
-        student: student,
-        universty_name: university_name,
-        education_degree: degree,
+    } else if (checkCase[0] == true && checkCase[1] == false) {
+      console.log("Case : 2");
+      return await StudentIsNotInUniversity(response, body, {
+        UniversityModel,
+        StudentModel,
+        BridgeModel,
       });
-    } else if (!university_infomation.length) {
-      const checkUniversity = await UniversityModel.query()
-        .where({ full_name: university_name })
-        .fetch()
-        .then((response) => response.toJSON());
-      if (checkUniversity.length) {
-        const education = await UniversityModel.create({
-          full_name: university_name,
-          education_degree: degree,
-        });
-        response.status(200).send("Create degree for university");
-      } else {
-        response.status(404).send(`${universty_name} University not found`);
-      }
+    } else if (
+      checkCase[0] == false &&
+      (checkCase[1] == true || checkCase[1] == false)
+    ) {
+      console.log("Case : 3");
+      return response
+        .status(404)
+        .send(
+          `${university_name} university or university degree is not found`
+        );
     }
   }
 
