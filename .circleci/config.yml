@@ -14,8 +14,8 @@ jobs:
           command: 
             mv .env.testing .env
       - run:
-          name: Test
-          command: yarn test
+          name: Run application
+          command: yarn start
 
 workflows:
   build_and_test:
