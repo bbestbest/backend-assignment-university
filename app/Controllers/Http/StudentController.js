@@ -1,5 +1,7 @@
 "use strict";
 
+const StudentValidator = require("../../../service/StudentValidator");
+const NumberTypeParamValidator = require("../../../service/NumberTypeParamValidator");
 const StudentModel = use("App/Models/Student");
 const BridgeModel = use("App/Models/Bridge");
 const UniversityModel = use("App/Models/University");
@@ -10,8 +12,15 @@ class StudentController {
 
     return { status: 200, error: undefined, data: data };
   }
+
   async show({ request }) {
     const { id } = request.params;
+
+    const validatedParam = await NumberTypeParamValidator(id);
+    if (validatedParam.error) {
+      return { status: 422, error: validatedParam.error };
+    }
+
     const data = await StudentModel.query()
       .with("universities")
       .where({ id })
@@ -19,6 +28,7 @@ class StudentController {
 
     return { status: 200, error: undefined, data: data };
   }
+
   async store({ request }) {
     const { body } = request;
     const { first_name, last_name, university_name, degree } = body;
@@ -114,21 +124,49 @@ class StudentController {
       }
     }
   }
+
   async update({ request }) {
     const { params, body } = request;
     const { id } = params;
     const { first_name, last_name } = body;
-    let data = await StudentModel.find(id);
-    data.merge(body);
-    await data.save();
 
-    return { status: 200, error: undefined, data: data };
+    const validatedParam = NumberTypeParamValidator(id);
+    if (validatedParam.error) {
+      return { status: 422, error: validatedParam.error };
+    }
+
+    const validatedData = UniversityValidator(body);
+    if (validatedParam.error) {
+      return { status: 422, error: validatedData.error };
+    }
+
+    const checkData = await UniversityModel.query()
+      .where(body)
+      .fetch()
+      .then((response) => response.toJSON());
+
+    let data = await UniversityModel.find(id);
+    if (checkData[0] != undefined) {
+      return { status: 200, message: "Already duplicate" };
+    } else {
+      data.merge(body);
+      await data.save();
+    }
+
+    return { status: 200, data: data };
   }
+
   async destroy({ request }) {
     const { params } = request;
     const { id } = params;
     let message = "";
     let data = await StudentModel.find(id);
+
+    const validatedParam = await NumberTypeParamValidator(id);
+    if (validatedParam.error) {
+      return { status: 422, error: validatedParam.error };
+    }
+
     if (data !== null) {
       await data.delete();
       message = `Item ${id} is destroying`;

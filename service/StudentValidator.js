@@ -1,13 +1,13 @@
 const Validator = use("Validator");
 
-module.exports = async function UniversityValidator(data) {
+module.exports = async function StudentValidator(data) {
   if (typeof data !== "object") throw new Error();
 
   const { full_name, education_degree } = data;
 
   const rules = {
-    full_name: "required",
-    education_degree: "required",
+    first_name: "required",
+    last_name: "required",
   };
 
   const validation = await Validator.validateAll(
