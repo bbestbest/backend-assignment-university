@@ -1,5 +1,7 @@
 "use strict";
 
+const Logger = use("Logger");
+
 const StudentValidator = require("../../../service/StudentValidator");
 const NumberTypeParamValidator = require("../../../service/NumberTypeParamValidator");
 
@@ -10,18 +12,21 @@ const UniversityModel = use("App/Models/University");
 const CheckStudentAndUniversity = require("../../../util/CheckStudentAndUniversity");
 
 class StudentController {
-  async index({ response }) {
+  async index({ request, response }) {
+    Logger.info("request url is %s", request.url());
     const data = await StudentModel.query().fetch();
 
-    response.status(200).send(data);
+    response.status(200).send(data, Logger);
   }
 
   async show({ request, response }) {
+    Logger.info("request url is %s", request.url());
     const { id } = request.params;
 
     const validatedParam = await NumberTypeParamValidator(id);
     if (validatedParam.error) {
-      response.status(422).send(validatedParam.error);
+      Logger.alert(validatedParam.error);
+      return validatedParam.error;
     }
 
     const data = await StudentModel.query()
@@ -33,12 +38,14 @@ class StudentController {
   }
 
   async store({ request, response }) {
+    Logger.info("request url is %s", request.url());
     const { body } = request;
     const { first_name, last_name, university_name, degree } = body;
 
     const validatedData = await StudentValidator(body);
     if (validatedData.error) {
-      response.status(422).send(validatedData.error);
+      Logger.alert(validatedData.error);
+      validatedData.error;
     }
 
     const university = await UniversityModel.query()
@@ -85,18 +92,21 @@ class StudentController {
   }
 
   async update({ request }) {
+    Logger.info("request url is %s", request.url());
     const { params, body } = request;
     const { id } = params;
     const { first_name, last_name } = body;
 
     const validatedParam = NumberTypeParamValidator(id);
     if (validatedParam.error) {
-      return { status: 422, error: validatedParam.error };
+      Logger.alert(validatedParam.error);
+      return validatedParam.error;
     }
 
     const validatedData = UniversityValidator(body);
-    if (validatedParam.error) {
-      return { status: 422, error: validatedData.error };
+    if (validatedData.error) {
+      Logger.alert(validatedData.error);
+      return validatedData.error;
     }
 
     const checkData = await UniversityModel.query()
@@ -115,6 +125,7 @@ class StudentController {
   }
 
   async destroy({ request, response }) {
+    Logger.info("request url is %s", request.url());
     const { params } = request;
     const { id } = params;
     let message = "";
@@ -122,7 +133,8 @@ class StudentController {
 
     const validatedParam = await NumberTypeParamValidator(id);
     if (validatedParam.error) {
-      response.status(422).send(validatedParam.error);
+      Logger.alert(validatedParam.error);
+      return validatedParam.error;
     }
 
     if (data !== null) {
