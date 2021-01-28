@@ -1,24 +1,32 @@
 "use strict";
 
+const Logger = use("Logger");
+
 const StudentValidator = require("../../../service/StudentValidator");
 const NumberTypeParamValidator = require("../../../service/NumberTypeParamValidator");
+
 const StudentModel = use("App/Models/Student");
 const BridgeModel = use("App/Models/Bridge");
 const UniversityModel = use("App/Models/University");
 
+const CheckStudentAndUniversity = require("../../../util/CheckStudentAndUniversity");
+
 class StudentController {
-  async index({ response }) {
+  async index({ request, response }) {
+    Logger.info("request url is %s", request.url());
     const data = await StudentModel.query().fetch();
 
-    response.status(200).send(data);
+    response.status(200).send(data, Logger);
   }
 
   async show({ request, response }) {
+    Logger.info("request url is %s", request.url());
     const { id } = request.params;
 
     const validatedParam = await NumberTypeParamValidator(id);
     if (validatedParam.error) {
-      response.status(422).send(validatedParam.error);
+      Logger.alert(validatedParam.error);
+      return validatedParam.error;
     }
 
     const data = await StudentModel.query()
@@ -30,96 +38,75 @@ class StudentController {
   }
 
   async store({ request, response }) {
+    Logger.info("request url is %s", request.url());
     const { body } = request;
     const { first_name, last_name, university_name, degree } = body;
-    const university_infomation = await UniversityModel.query()
+
+    const validatedData = await StudentValidator(body);
+    if (validatedData.error) {
+      Logger.alert(validatedData.error);
+      validatedData.error;
+    }
+
+    const university = await UniversityModel.query()
       .where({ full_name: university_name, education_degree: degree })
       .fetch()
       .then((response) => response.toJSON());
-    if (student_infomation.length && university_infomation.length) {
-      const getStudentId = await StudentModel.query()
-        .where({ first_name, last_name })
-        .fetch()
-        .then((response) => response.toJSON());
-      const getUniversityId = await UniversityModel.query()
-        .where({ full_name: university_name, education_degree: degree })
-        .fetch()
-        .then((response) => response.toJSON());
-      const checkBridge = await BridgeModel.query()
-        .where({
-          student_id: getStudentId[0].id,
-          university_id: getUniversityId[0].id,
-        })
-        .fetch()
-        .then((response) => response.toJSON());
-      if (!checkBridge.length) {
-        const bridge = await BridgeModel.create({
-          student_id: getStudentId[0].id,
-          university_id: getUniversityId[0].id,
-        });
-      }
-      response.status(200).send({
-        student: student_infomation,
-        universty_name: university_name,
-        education_degree: degree,
-      });
-    } else if (!student_infomation.length && university_infomation.length) {
-      const student = await StudentModel.create({ first_name, last_name });
-      const getStudentId = await StudentModel.query()
-        .max("id as id")
-        .then((response) => JSON.parse(JSON.stringify(response)));
-      const getUniversityId = await UniversityModel.query()
-        .where({ full_name: university_name })
-        .fetch()
-        .then((response) => JSON.parse(JSON.stringify(response)));
-      const checkBridge = await BridgeModel.query()
-        .where({
-          student_id: getStudentId[0].id,
-          university_id: getUniversityId[0].id,
-        })
-        .fetch()
-        .then((response) => response.toJSON());
-      if (!checkBridge.length) {
-        const bridge = await BridgeModel.create({
-          student_id: getStudentId[0].id,
-          university_id: getUniversityId[0].id,
-        });
-      }
-      response.status(200).send({
-        student: student,
-        universty_name: university_name,
-        education_degree: degree,
-      });
-    } else if (!university_infomation.length) {
-      const checkUniversity = await UniversityModel.query()
-        .where({ full_name: university_name })
-        .fetch()
-        .then((response) => response.toJSON());
-      if (checkUniversity.length) {
-        const education = await UniversityModel.create({
-          full_name: university_name,
-          education_degree: degree,
-        });
-        response.status(200).send("Create degree for university");
-      } else {
-        response.status(404).send(`${universty_name} University not found`);
-      }
+    const student = await StudentModel.query()
+      .where({ first_name: first_name, last_name: last_name })
+      .fetch()
+      .then((response) => response.toJSON());
+
+    const checkCase = [university.length > 0, student.length > 0];
+
+    if (checkCase[0] == true && checkCase[1] == true) {
+      console.log("Case : 1");
+      return await CheckStudentAndUniversity(
+        response,
+        body,
+        {
+          UniversityModel,
+          StudentModel,
+          BridgeModel,
+        },
+        1
+      );
+    } else if (checkCase[0] == true && checkCase[1] == false) {
+      return await CheckStudentAndUniversity(
+        response,
+        body,
+        {
+          UniversityModel,
+          StudentModel,
+          BridgeModel,
+        },
+        2
+      );
+    } else if (checkCase[0] == false) {
+      return response
+        .status(404)
+        .send(
+          `${university_name} university or university degree is not found`
+        );
     }
   }
 
   async update({ request }) {
+    Logger.info("request url is %s", request.url());
     const { params, body } = request;
     const { id } = params;
     const { first_name, last_name } = body;
 
     const validatedParam = NumberTypeParamValidator(id);
     if (validatedParam.error) {
-      return { status: 422, error: validatedParam.error };
+      Logger.alert(validatedParam.error);
+      return validatedParam.error;
     }
 
     const validatedData = UniversityValidator(body);
-    if (validatedParam.error) {
-      return { status: 422, error: validatedData.error };
+    if (validatedData.error) {
+      Logger.alert(validatedData.error);
+      return validatedData.error;
     }
 
     const checkData = await UniversityModel.query()
@@ -138,6 +125,7 @@ class StudentController {
   }
 
   async destroy({ request, response }) {
+    Logger.info("request url is %s", request.url());
     const { params } = request;
     const { id } = params;
     let message = "";
@@ -145,7 +133,8 @@ class StudentController {
 
     const validatedParam = await NumberTypeParamValidator(id);
     if (validatedParam.error) {
-      response.status(422).send(validatedParam.error);
+      Logger.alert(validatedParam.error);
+      return validatedParam.error;
     }
 
     if (data !== null) {

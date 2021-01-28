@@ -5,7 +5,7 @@ const NumberTypeParamValidator = require("../../../service/NumberTypeParamValida
 const UniversityModel = use("App/Models/University");
 
 class UniversityController {
-  async index({ response }) {
+  async index({ request, response }) {
     let data = await UniversityModel.query()
       .groupBy("full_name")
       .fetch()
@@ -19,7 +19,7 @@ class UniversityController {
           updated_at: item.updated_at,
         })
     );
-    response.status(200).send(data);
+    response.status(200).send(mapData);
   }
 
   async show({ request, response }) {
@@ -27,7 +27,7 @@ class UniversityController {
 
     const validatedParam = await NumberTypeParamValidator(id);
     if (validatedParam.error) {
-      response.status(422).send(validatedParam.error);
+      return validatedParam.error;
     }
 
     let data = await UniversityModel.query()
@@ -44,7 +44,7 @@ class UniversityController {
 
     const validatedData = await UniversityValidator(body);
     if (validatedData.error) {
-      response.status(422).send(validatedData.error);
+      return validatedData.error;
     }
 
     const checkData = await UniversityModel.query()
@@ -64,18 +64,21 @@ class UniversityController {
   }
 
   async update({ request, response }) {
+    Logger.info("request url is %s", request.url());
     const { params, body } = request;
     const { id } = params;
     const { full_name, education_degree } = body;
 
     const validatedParam = NumberTypeParamValidator(id);
     if (validatedParam.error) {
-      response.status(422).send(validatedParam.error);
+      Logger.info(validatedParam.error);
+      return validatedParam.error;
     }
 
     const validatedData = UniversityValidator(body);
     if (validatedParam.error) {
-      response.status(422).send(validatedData.error);
+      Logger.info(validatedData.error);
+      return validatedData.error;
     }
 
     const checkData = await UniversityModel.query()
@@ -94,6 +97,7 @@ class UniversityController {
   }
 
   async destroy({ request, response }) {
+    Logger.info("request url is %s", request.url());
     const { params } = request;
     const { id } = params;
     let message = "";
@@ -101,7 +105,8 @@ class UniversityController {
 
     const validatedParam = NumberTypeParamValidator(id);
     if (validatedParam.error) {
-      response.status(422).send(validatedParam.error);
+      Logger.alert(validatedParam.error);
+      return validatedParam.error;
     }
 
     let data = await UniversityModel.find(id);
