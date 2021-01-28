@@ -65,7 +65,6 @@ class StudentController {
         1
       );
     } else if (checkCase[0] == true && checkCase[1] == false) {
-      console.log("Case : 2");
       return await CheckStudentAndUniversity(
         response,
         body,
@@ -76,11 +75,7 @@ class StudentController {
         },
         2
       );
-    } else if (
-      checkCase[0] == false &&
-      (checkCase[1] == true || checkCase[1] == false)
-    ) {
-      console.log("Case : 3");
+    } else if (checkCase[0] == false) {
       return response
         .status(404)
         .send(
