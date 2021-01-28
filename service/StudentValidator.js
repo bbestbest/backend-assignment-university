@@ -6,8 +6,8 @@ module.exports = async function StudentValidator(data) {
   const { first_name, last_name } = data;
 
   const rules = {
-    first_name: "required|string",
-    last_name: "required|string",
+    first_name: "required",
+    last_name: "required",
   };
 
   const validation = await Validator.validateAll(

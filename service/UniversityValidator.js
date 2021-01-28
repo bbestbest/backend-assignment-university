@@ -6,8 +6,8 @@ module.exports = async function UniversityValidator(data) {
   const { full_name, education_degree } = data;
 
   const rules = {
-    full_name: "required|string",
-    education_degree: "required|string",
+    full_name: "required",
+    education_degree: "required",
   };
 
   const validation = await Validator.validateAll(
